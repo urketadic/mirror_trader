@@ -16,9 +16,13 @@ list_clients(get_clients(), 'binance')
 f = open(__DIR__ + '/main_account.txt', 'r')
 CREDENTIALS = f.read().split('\n')
 CREDENTIALS = CREDENTIALS[0].split('   ')
-
+print('Master')
 print(CREDENTIALS[0])
 print(CREDENTIALS[1])
+
+global copy_master
+newMaster = Client(CREDENTIALS[0], CREDENTIALS[1])		
+#balance = float(newMaster.get_asset_balance(asset='BTC')['free'])
 
 binance_api_key = CREDENTIALS[0]
 binance_api_secret = CREDENTIALS[1]
@@ -33,16 +37,12 @@ from copy_clients import cancel_order
 from copy_clients import get_clients
 
 import json
-client = Client(binance_api_key, binance_api_secret)
+Master = Client(binance_api_key, binance_api_secret)
 
-balance = client.get_asset_balance(asset='BTC')
-print('Account BTC balance: '+ str(balance))
-balance = client.get_asset_balance(asset='BNB')
-print('Account BNB balance: '+ str(balance)+"\n")
-balance = 1
+balance1 = float(Master.get_asset_balance(asset='USDT')['free'])
+balance2 = float(Master.get_asset_balance(asset='LINK')['free'])
 
-
-init_copy_clients(balance)
+init_copy_clients(balance1,balance2)
 mainOrders = []
 
 def process_message(msg):
@@ -91,7 +91,7 @@ def process_message(msg):
 		console_message(ex, "binance")		
 			 
 
-bmWss = BinanceSocketManager(client)
+bmWss = BinanceSocketManager(Master)
 
 bmWss.start_user_socket(process_message)
 

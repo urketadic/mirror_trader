@@ -4,7 +4,7 @@ from binance.enums import *
 from datetime import date, datetime
 import json
 import time
-import ccxt # for the OCO orders
+#import ccxt # for the OCO orders
 from modules.helper import *
 
 # global variables (seen by the binance.py too)
@@ -45,13 +45,13 @@ def init_copy_clients( MainBalance ):
 		accName = key_secret[2]
 		try:
 			newClient = Client(binance_api_key, binance_api_secret)
-			newClient.ccxtClient = ccxt.binance({ 'apiKey': binance_api_key, 'secret': binance_api_secret,'enableRateLimit': True})
+			#newClient.ccxtClient = ccxt.binance({ 'apiKey': binance_api_key, 'secret': binance_api_secret,'enableRateLimit': True})
 					
 			thisBalance = float(newClient.get_asset_balance(asset='BTC')['free'])
 			copy_clients.append( newClient )
 			copy_clients[-1]._id = key_secret[0]
 			
-			thisBalance = 1.0 # thisBalance['free']
+			thisBalance = 0.2 # thisBalance['free']
 			copy_clients[-1].BlncRate = float(thisBalance)/MainBalance
 			copy_clients[-1].accName = accName
 			copy_clients[-1].active = True
@@ -73,32 +73,67 @@ def copy_order( client, message, count):
 			ocoOrders[client._id][orderData['g']] = orderData
 			notUpd = False
 
-		if orderData['o']=='LIMIT_MAKER' and orderData['X']=='NEW' and orderData['g']!=-1:
-			symb = orderData['s']
-			ordSide = orderData['S']
-			tIFrc = orderData['f']
-			ordPrice = orderData['p']
-			ordQty = float(orderData['q'])*client.BlncRate
-			stopOrder = ocoOrders[client._id][orderData['g']]
-			stopPrice = stopOrder['P']
-			stopLimitPrice = stopOrder['p']
-			upd = client.ccxtClient.private_post_order_oco({ "symbol": symb, "side": ordSide, "quantity": ordQty, "price": ordPrice, "stopPrice": stopPrice, 
-							"stopLimitPrice": stopLimitPrice, "stopLimitTimeInForce": tIFrc})
-			bMessage = ''
-			if count==1:
-				bMessage = 'MASTER ACCOUNT:: Placed a New OCO-Order, with orderListId: ' + str(upd['orderListId']) + \
-									' Quantity: ' + str(ordQty) +' for the '+ upd['symbol'] + ' pair\n\n'			
-			clientMsg = client.accName+':: Placed a New OCO-Order: Quantity: ' + str(ordQty) + ' for the '+ upd['symbol'] + ' pair'
-			console_message(clientMsg, "binance")
-			upd["orderId"] = upd["orders"][0]["orderId"]
-			bMessage = bMessage + clientMsg
+##		if orderData['o']=='LIMIT_MAKER' and orderData['X']=='NEW' and orderData['g']!=-1:
+##			symb = orderData['s']
+##			ordSide = orderData['S']
+##			tIFrc = orderData['f']
+##			ordPrice = orderData['p']
+##			ordQty = float(orderData['q'])*client.BlncRate
+##			stopOrder = ocoOrders[client._id][orderData['g']]
+##			stopPrice = stopOrder['P']
+##			stopLimitPrice = stopOrder['p']
+##			#upd = client.ccxtClient.private_post_order_oco({ "symbol": symb, "side": ordSide, "quantity": ordQty, "price": ordPrice, "stopPrice": stopPrice, 
+##							"stopLimitPrice": stopLimitPrice, "stopLimitTimeInForce": tIFrc})
+##			bMessage = ''
+##			if count==1:
+##				bMessage = 'MASTER ACCOUNT:: Placed a New OCO-Order, with orderListId: ' + str(upd['orderListId']) + \
+##									' Quantity: ' + str(ordQty) +' for the '+ upd['symbol'] + ' pair\n\n'			
+##			clientMsg = client.accName+':: Placed a New OCO-Order: Quantity: ' + str(ordQty) + ' for the '+ upd['symbol'] + ' pair'
+##			console_message(clientMsg, "binance")
+##			upd["orderId"] = upd["orders"][0]["orderId"]
+##			bMessage = bMessage + clientMsg
 			
 
 		if orderData['o']=='MARKET' and orderData['X']=='NEW':
 			symb = orderData['s']
 			ordSide = orderData['S']
+			
+			if ordSide=='BUY':  
+##			 f = open(__DIR__ + '/main_account.txt', 'r')
+##			 CREDENTIALS = f.read().split('\n')
+##			 CREDENTIALS = CREDENTIALS[0].split('   ')
+##			 uno = Client(CREDENTIALS[0], CREDENTIALS[1])
+##			 mainusdt = float(uno.get_asset_balance(asset='USDT')['free'])
+			 mainusdt = float(orderData['Q'])
+			 f = open(__DIR__ + '/copy_clients.txt', 'r')
+			 CREDENTIALS = f.read().split('\n')
+			 CREDENTIALS = CREDENTIALS[0].split('   ')
+			 uno = Client(CREDENTIALS[0], CREDENTIALS[1])
+			 clientusdt = float(uno.get_asset_balance(asset='USDT')['free'])
+			 
+			 client.BlncRate=float((clientusdt)/(mainusdt))
+			 print('newblncrate'+ str(client.BlncRate))
+			else:
+			 
+##			 f = open(__DIR__ + '/main_account.txt', 'r')
+##			 CREDENTIALS = f.read().split('\n')
+##			 CREDENTIALS = CREDENTIALS[0].split('   ')
+##			 uno = Client(CREDENTIALS[0], CREDENTIALS[1])
+##			 mainlink = float(uno.get_asset_balance(asset='LINK')['free'])
+			 mainlink = float(orderData['q'])
+			 f = open(__DIR__ + '/copy_clients.txt', 'r')
+			 CREDENTIALS = f.read().split('\n')
+			 CREDENTIALS = CREDENTIALS[0].split('   ')
+			 uno = Client(CREDENTIALS[0], CREDENTIALS[1])
+			 clientlink = float(uno.get_asset_balance(asset='LINK')['free'])
+			 
+			 client.BlncRate=float((clientlink)/(mainlink))
+			 print('newblncrate'+ str(client.BlncRate))			 
 			tIFrc = orderData['f']
-			ordQty = float(orderData['q'])*client.BlncRate
+			def truncate(n, decimals=0):
+			 multiplier = 10 ** decimals
+			 return int(n * multiplier) / multiplier
+			ordQty = truncate(float(orderData['q'])*client.BlncRate,1)
 			#upd = client.Order.Order_new(symbol=symb, execInst=execInst, timeInForce=tIFrc, orderQty=ordQty, price=ordPrice, ordType='Limit', side=ordSide).result()
 			upd = client.create_order( symbol=symb , side=ordSide, type=ORDER_TYPE_MARKET, quantity=ordQty)
 			bMessage = ''

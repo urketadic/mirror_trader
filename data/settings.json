@@ -22,21 +22,15 @@
   },
   "binance": {
     "main": {
-      "api_key": "ZLUX11OJ9B9jj7AdCdJKMELAwLxJEDgNYGUg2KDHD1wdOa2nX34goRkGDI7yfVUZ",
-      "api_secret": "IU3BZNmraOXR9yulgKbD3SFA1rGhAeliVkFAiOr2LnfIJAfEZe54JlslVtzTIflf",
+      "api_key": "ObXqFhavaQ9M8Y42eBtYxSLpJCv3YZkhDWlJaqOvKVbeFcNQJc7FpsMpY7Ma13Yp",
+      "api_secret": "k5Kaj7uzezYvj9uP22cLE6SnnUwLUUnJUhoTzlR7r0spaA91ImtZyTS3GsUToh6W",
       "net": "mainnet"
     },
     "clients": {
       "client1": {
-        "api_key": "O0CdbMOCvmpBqOvtkM",
-        "api_secret": "GSWugCko0OFOtaTSs4yybjfTW6nkIHn8LaXX",
+        "api_key": "WTifbie9wu1HzaKKnBNWDZAmUHyHYa2kVcsVuEJ4MEe0oVdN0FskfTY7RhghR7qD",
+        "api_secret": "1jUpOKbQKasKEmT0zztTi819W0Io19O15YSodcjCfPMeP564Q0QV0inXRfx1kptS",
         "name": "Client 1",
-        "net": "mainnet"
-      },
-      "client3": {
-        "name": "Client 3",
-        "api_key": "HLDuAbqBSSpEg7Xz8n",
-        "api_secret": "c6E1l13ZpBT3X9kWwLkB4eZMNBnNsQ0bOCkT",
         "net": "mainnet"
       }
     }
