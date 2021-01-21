@@ -22,8 +22,8 @@
   },
   "binance": {
     "main": {
-      "api_key": "x7a3WCM6zk7unzKmAItLqvAiL1EIdfcAF49b7qYqZO71fBUCOrF6zhZkaIBkdJn3",
-      "api_secret": "oPLhgDeceZvPogf3zf2lGhLgEBya5EjeX533e0Pfi68NxelRITQcFbi36fMQO75h",
+      "api_key": "2QuZS6tCnCq1pKuiQ3CTxLbFNxRi43mYAq8YQt2lSvzjhg1FL3YYobyXlxNhgW5r",
+      "api_secret": "s87WDW4trErrCPu4Sd28QTqmPHIwxUrG1VQWy9yYdo80lQoyIn0aq8Ul5V5VY3Nl",
       "net": "mainnet"
     },
     "clients": {

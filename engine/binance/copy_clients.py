@@ -65,7 +65,6 @@ def init_copy_clients( MainBalance ):
 
 def copy_order( client, message, count):
 	
-	# offload JSON data from the socket message
 	orderData = message
 	notUpd = True
 	try:
@@ -73,37 +72,11 @@ def copy_order( client, message, count):
 			ocoOrders[client._id][orderData['g']] = orderData
 			notUpd = False
 
-##		if orderData['o']=='LIMIT_MAKER' and orderData['X']=='NEW' and orderData['g']!=-1:
-##			symb = orderData['s']
-##			ordSide = orderData['S']
-##			tIFrc = orderData['f']
-##			ordPrice = orderData['p']
-##			ordQty = float(orderData['q'])*client.BlncRate
-##			stopOrder = ocoOrders[client._id][orderData['g']]
-##			stopPrice = stopOrder['P']
-##			stopLimitPrice = stopOrder['p']
-##			#upd = client.ccxtClient.private_post_order_oco({ "symbol": symb, "side": ordSide, "quantity": ordQty, "price": ordPrice, "stopPrice": stopPrice, 
-##							"stopLimitPrice": stopLimitPrice, "stopLimitTimeInForce": tIFrc})
-##			bMessage = ''
-##			if count==1:
-##				bMessage = 'MASTER ACCOUNT:: Placed a New OCO-Order, with orderListId: ' + str(upd['orderListId']) + \
-##									' Quantity: ' + str(ordQty) +' for the '+ upd['symbol'] + ' pair\n\n'			
-##			clientMsg = client.accName+':: Placed a New OCO-Order: Quantity: ' + str(ordQty) + ' for the '+ upd['symbol'] + ' pair'
-##			console_message(clientMsg, "binance")
-##			upd["orderId"] = upd["orders"][0]["orderId"]
-##			bMessage = bMessage + clientMsg
-			
-
 		if orderData['o']=='MARKET' and orderData['X']=='NEW':
 			symb = orderData['s']
 			ordSide = orderData['S']
 			
 			if ordSide=='BUY':  
-##			 f = open(__DIR__ + '/main_account.txt', 'r')
-##			 CREDENTIALS = f.read().split('\n')
-##			 CREDENTIALS = CREDENTIALS[0].split('   ')
-##			 uno = Client(CREDENTIALS[0], CREDENTIALS[1])
-##			 mainusdt = float(uno.get_asset_balance(asset='USDT')['free'])
 			 mainusdt = float(orderData['Q'])
 			 f = open(__DIR__ + '/copy_clients.txt', 'r')
 			 CREDENTIALS = f.read().split('\n')
@@ -114,12 +87,6 @@ def copy_order( client, message, count):
 			 client.BlncRate=float((clientusdt)/(mainusdt))
 			 print('newblncrate'+ str(client.BlncRate))
 			else:
-			 
-##			 f = open(__DIR__ + '/main_account.txt', 'r')
-##			 CREDENTIALS = f.read().split('\n')
-##			 CREDENTIALS = CREDENTIALS[0].split('   ')
-##			 uno = Client(CREDENTIALS[0], CREDENTIALS[1])
-##			 mainlink = float(uno.get_asset_balance(asset='LINK')['free'])
 			 mainlink = float(orderData['q'])
 			 f = open(__DIR__ + '/copy_clients.txt', 'r')
 			 CREDENTIALS = f.read().split('\n')
@@ -134,7 +101,7 @@ def copy_order( client, message, count):
 			 multiplier = 10 ** decimals
 			 return int(n * multiplier) / multiplier
 			ordQty = truncate(float(orderData['q'])*client.BlncRate,1)
-			#upd = client.Order.Order_new(symbol=symb, execInst=execInst, timeInForce=tIFrc, orderQty=ordQty, price=ordPrice, ordType='Limit', side=ordSide).result()
+			print('ordqty'+ str(ordQty))
 			upd = client.create_order( symbol=symb , side=ordSide, type=ORDER_TYPE_MARKET, quantity=ordQty)
 			bMessage = ''
 			if count==1:
@@ -145,66 +112,6 @@ def copy_order( client, message, count):
 			console_message(clientMsg, "binance")
 			bMessage = bMessage + clientMsg
 
-		if orderData['o']=='LIMIT' and orderData['X']=='NEW':
-			symb = orderData['s']
-			ordPrice = orderData['p']
-			ordSide = orderData['S']
-			tIFrc = orderData['f']
-			ordQty = float(orderData['q'])*client.BlncRate
-
-			#upd = client.Order.Order_new(symbol=symb, execInst=execInst, timeInForce=tIFrc, orderQty=ordQty, price=ordPrice, ordType='Limit', side=ordSide).result()
-			upd = client.create_order( symbol=symb , side=ordSide, type=ORDER_TYPE_LIMIT, timeInForce=tIFrc, quantity=ordQty, price=ordPrice)
-			bMessage = ''
-			if count==1:
-				bMessage = 'MASTER ACCOUNT:: Placed a New LIMIT-Order, Price: ' + str(orderData['p']) + \
-									' Quantity: ' + str(orderData['q']) + ' for the '+ orderData['s'] + ' pair\n\n'			
-			clientMsg = client.accName+':: Placed a New Limit-Order, Price: ' + str(upd['price']) + \
-					' Quantity: ' + str(upd['origQty']) + ' for the '+ upd['symbol'] + ' pair'
-			console_message(clientMsg, "binance")
-			bMessage = bMessage + clientMsg
-
-		if (orderData['o']=='TAKE_PROFIT_LIMIT' or orderData['o']=='STOP_LOSS_LIMIT') and orderData['X']=='NEW' and orderData['g']==-1:
-			symb = orderData['s']
-			ordPrice = orderData['p']
-			stopPrice = orderData['P']
-			ordSide = orderData['S']
-			tIFrc = orderData['f']
-			ordQty = float(orderData['q'])*client.BlncRate
-
-			#upd = client.Order.Order_new(symbol=symb, execInst=execInst, timeInForce=tIFrc, orderQty=ordQty, price=ordPrice, ordType='Limit', side=ordSide).result()
-			upd = client.create_order( symbol=symb, side=ordSide, type=orderData['o'], timeInForce=tIFrc, quantity=ordQty, price=ordPrice, stopPrice=stopPrice)
-			bMessage = ''
-			if count==1:
-				bMessage = 'MASTER ACCOUNT:: Placed a New STOP-LIMIT-Order, Price: ' + str(orderData['p']) + 'stopPrice: ' + str(orderData['P']) + \
-									' Quantity: ' + str(orderData['q']) + ' for the '+ orderData['s'] + ' pair\n\n'
-			clientMsg = client.accName+':: Placed a New Limit-Order, Price: ' + str(ordPrice) + \
-						' Quantity: ' + str(ordQty) + ' for the '+ upd['symbol'] + ' pair'
-			console_message(clientMsg, "binance")
-			bMessage = bMessage + clientMsg
-
-		if (orderData['o']=='TAKE_PROFIT' or orderData['o']=='STOP_LOSS') and orderData['X']=='NEW':
-			symb = orderData['s']
-			ordPrice = orderData['p']
-			stopPrice = orderData['P']
-			ordSide = orderData['S']
-			tIFrc = orderData['f']
-			ordQty = float(orderData['q'])*client.BlncRate
-
-			#upd = client.Order.Order_new(symbol=symb, execInst=execInst, timeInForce=tIFrc, orderQty=ordQty, price=ordPrice, ordType='Limit', side=ordSide).result()
-			upd = client.create_order( symbol=symb, side=ordSide, type=orderData['o'], quantity=ordQty, stopPrice=stopPrice)
-			bMessage = ''
-			if count==1:
-				bMessage = 'MASTER ACCOUNT:: Placed a New Stop-Order, stopPrice: ' + str(orderData['P']) + \
-									' Quantity: ' + str(orderData['q']) + ' for the '+ orderData['s'] + ' pair\n\n'
-			clientMsg = client.accName+':: Placed a New Limit-Order, Price: ' + str(ordPrice) + \
-						' Quantity: ' + str(ordQty) + ' for the '+ upd['symbol'] + ' pair'
-			console_message(clientMsg, "binance")
-			bMessage = bMessage + clientMsg
-
-		#print(upd)
-		if orderData['o']!='MARKET' and notUpd:
-			clientOrders[client._id][orderData['i']] = upd['orderId']
-		#print(clientOrders)
 	except Exception as ex:
 			console_message(client.accName+' ' +str(ex), "binance")
 
@@ -213,8 +120,6 @@ def copy_order( client, message, count):
 def cancel_order( client, message):
 
 	orderData = message
-	# offload JSON data from the socket message
-	# orderData = message['data'][0]
 	try:	
 		if client._id in clientOrders.keys():
 			console_message(client.accName+":: Cancelling OrderID: " + str(clientOrders[client._id][orderData['i']]), "binance")
@@ -223,6 +128,5 @@ def cancel_order( client, message):
 	try:
 		ordId = clientOrders[client._id][orderData['i']]
 		client.cancel_order( symbol=orderData['s'], orderId=ordId)
-		#print(upd)
 	except Exception as ex:
 			console_message(client.accName+' ' +str(ex), "binance")
