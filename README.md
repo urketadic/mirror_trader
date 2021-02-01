@@ -4,7 +4,7 @@ Brought to you for free by www.deficlerk.com
 
 # Installation
 **1) Install Node modules**\
-![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) `cd admin && npm install`
+![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) `cd admin && node app.js`
 
 **2) Install Python dependencies**\
 ![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) `cd engine/*exchange* && pip install -r requirements.txt`
@@ -18,3 +18,7 @@ Brought to you for free by www.deficlerk.com
 
 # To Do
 Add proxies to avoid problems when using 10+ client accounts.
+
+Fix:
+1) Bitmex market orders.
+2) Bybit big delays and random bugs.
