@@ -18,6 +18,7 @@ Brought to you for free by www.deficlerk.com
 
 # To Do
 Add proxies to avoid problems when using 10+ client accounts.
+Add option for account to follow with % instead of fixed amount of funds.
 
 Fix:
 1) Bitmex market orders.
